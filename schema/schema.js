@@ -1,11 +1,18 @@
 // responsible for telling graphQL what your application data looks like
 const graphql = require('graphql');
+const _ = require('lodash');
 
 const {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLSchema
 } = graphql;
+
+const users = [
+  { id: '24', firstName: 'Germain', age: 29 },
+  { id: '07', firstName: 'James', age: 55 }
+];
 
 // tells graphQL what a User Object looks like
 const UserType = new GraphQLObjectType({
@@ -28,7 +35,13 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLString} },
       resolve(parentValue, args) {
         //we go in our DB and actually find that data.
+        return _.find(users, { id: args.id });
       }
     }
   }
-})
+});
+
+// takes in a root query and returns a graphQL schema instance
+module.exports = new GraphQLSchema({
+  query: RootQuery
+});
